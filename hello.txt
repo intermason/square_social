@@ -1,1 +1,1 @@
-Hello, Git!
+Hello, Git! Changes have been made to this repository.
