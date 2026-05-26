@@ -1,9 +1,6 @@
 package org.square;
 
-import java.sql.Connection;
-
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class Client {
 
@@ -28,11 +25,29 @@ public class Client {
     }
 }
 
-//gets the private connection
-public static Connection getConnection()
-{
-        return con;
-}
+
+
+    //get information of Clients from Server
+    public void getAllClients() {
+        // make a query and get results from query
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM Client");
+
+            //prints next client in the database
+            while (rs.next())
+            {
+                System.out.println(rs.getString(1));
+            }
+        }
+        // the query was failed
+        catch (SQLException e)
+        {
+            System.out.println("Query Failed!" + e.getMessage());
+        }
+
+    }
+
 
 
 }
