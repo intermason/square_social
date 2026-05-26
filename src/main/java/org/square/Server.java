@@ -38,9 +38,22 @@ public class Server {
                  dbName = rs.getString(1);
             }
             System.out.println("Database has connected. Database name: " + dbName);
-            dbConn.close();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void readAllData() {
+        Statement selectAll = null;
+        try {
+            selectAll = dbConn.createStatement();
+            ResultSet rs = selectAll.executeQuery("SELECT * FROM Users");
+            System.out.println("All users:");
+            while (rs.next()) {
+                System.out.println("UserId: " + rs.getInt("UserId") + ", FirstName: " + rs.getString("FirstName") + " LastName: " + rs.getString("LastName") + ", Email: " + rs.getString("Email") + ", Age: " + rs.getInt("Age") + ", DisplayName: " + rs.getString("DisplayName"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
