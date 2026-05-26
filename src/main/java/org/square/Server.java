@@ -57,6 +57,24 @@ public class Server {
         }
     }
 
+    public void createEntry(int userId, String firstName, String lastName, String email, int age, String displayName) {
+        PreparedStatement stmt = null;
+
+        try {
+            stmt = dbConn.prepareStatement("INSERT INTO Users VALUE (?, ?, ?, ?, ?, ?);");
+            stmt.setInt(1, userId);
+            stmt.setString(2, firstName);
+            stmt.setString(3, lastName);
+            stmt.setString(4, email);
+            stmt.setInt(5, age);
+            stmt.setString(6, displayName);
+            stmt.executeUpdate();
+            System.out.println("User created successfully");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 
 }
