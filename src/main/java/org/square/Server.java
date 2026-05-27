@@ -18,14 +18,10 @@ public class Server {
         try {
             env = envParser.getEnvVars();
             for (String key : env.keySet()) {
-                if (key.equals("DB_URL")) {
-                    this.url = env.get(key);
-                }
-                if (key.equals("DB_USERNAME")) {
-                    this.username = env.get(key);
-                }
-                if (key.equals("DB_PASSWORD")) {
-                    this.password = env.get(key);
+                switch (key) {
+                    case "DB_URL" -> this.url = env.get(key);
+                    case "DB_USERNAME" -> this.username = env.get(key);
+                    case "DB_PASSWORD" -> this.password = env.get(key);
                 }
             }
         } catch (IOException e) {
