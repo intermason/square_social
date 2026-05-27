@@ -44,6 +44,18 @@ public class Server {
         }
     }
 
+    public boolean isUserIdUsed(int userId) {
+        PreparedStatement stmt = null;
+        try {
+            stmt = dbConn.prepareStatement("SELECT * FROM Users WHERE UserId = ?");
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void readOneEntry(int userId) {
         PreparedStatement stmt = null;
         try {
@@ -85,8 +97,15 @@ public class Server {
             stmt.setString(4, email);
             stmt.setInt(5, age);
             stmt.setString(6, displayName);
-            stmt.executeUpdate();
-            System.out.println("User created successfully");
+            if (!isUserIdUsed(userId)) {
+                stmt.executeUpdate();
+                System.out.println("User created successfully");
+            }
+            else {
+                System.out.println("User id is already used.");
+            }
+
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -116,6 +135,12 @@ public class Server {
                String columnName = columns.getString("COLUMN_NAME");
                ResultSet oldValueRS = stmt.executeQuery("SELECT " + columnName + " FROM Users WHERE UserId = " + userId);
                if (oldValueRS.next()) oldValue = oldValueRS.getString(columnName);
+               if (column.equals("UserId")) {
+                   if (isUserIdUsed(Integer.parseInt(value))) {
+                       System.out.println("User id is already used.");
+                       return false;
+                   }
+               }
                stmt.executeUpdate("UPDATE Users SET " + columnName + " = '" + value + "' WHERE UserId = " + userId);
                System.out.println("Updated " + columnName + " from " + oldValue + " to " + value);
                return true;
