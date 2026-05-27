@@ -48,6 +48,22 @@ public class Server {
         }
     }
 
+    public void readOneEntry(int userId) {
+        PreparedStatement stmt = null;
+        try {
+            stmt = dbConn.prepareStatement("SELECT * FROM Users WHERE UserId = " + userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                System.out.println("User found, displaying data");
+                System.out.println("UserId: " + rs.getInt("UserId") + ", FirstName: " + rs.getString("FirstName") + " LastName: " + rs.getString("LastName") + ", Email: " + rs.getString("Email") + ", Age: " + rs.getInt("Age") + ", DisplayName: " + rs.getString("DisplayName"));
+            } else {
+                System.out.println("User not found in the database.");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void readAllData() {
         Statement selectAll = null;
         try {
@@ -118,6 +134,18 @@ public class Server {
         }
         return false;
 
+    }
+
+    public void deleteEntry(int userId) {
+        PreparedStatement stmt = null;
+        try {
+            stmt = dbConn.prepareStatement("DELETE FROM Users WHERE UserId = ?");
+            stmt.setInt(1, userId);
+            stmt.executeUpdate();
+            System.out.println("User deleted successfully");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
