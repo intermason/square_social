@@ -10,6 +10,7 @@ public class Server {
     String username;
     String password;
     Connection dbConn;
+    ResultSet columns;
 
     public Server() {
         Map<String, String> env;
@@ -39,6 +40,8 @@ public class Server {
             if (rs.next()) {
                  dbName = rs.getString(1);
             }
+            DatabaseMetaData metaData = dbConn.getMetaData();
+            columns = metaData.getColumns(dbName, null, "Users", null);
             System.out.println("Database has connected. Database name: " + dbName);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -77,29 +80,43 @@ public class Server {
         }
     }
 
-    public void updateEntry(int userId, String column, String value) {
+    public boolean updateEntry(int userId, String column, String value) {
         PreparedStatement stmt = null;
+        boolean columnFound = false;
+        String oldValue = "";
         try {
+            while (columns.next()) {
+                String columnName = columns.getString("COLUMN_NAME");
+                if (columnName.equals(column)) {
+                    System.out.println("Column found: " + columnName);
+                    columnFound = true;
+                    break;
+                }
+            }
+            if (!columnFound) {
+                System.out.println("Column not found in the database.");
+                return false;
+            }
            stmt = dbConn.prepareStatement("SELECT * FROM Users WHERE UserId = " + userId);
            ResultSet result = stmt.executeQuery();
            if (result.next()) {
                System.out.println("User found!");
-               DatabaseMetaData metaData = dbConn.getMetaData();
-               ResultSet columns = metaData.getColumns(dbName, null, "Users", null);
-               while (columns.next()) {
-                   String columnName = columns.getString("COLUMN_NAME");
-                   if (columnName.equals(column)) {
-                       stmt.executeUpdate("UPDATE Users SET " + columnName + " = '" + value + "' WHERE UserId = " + userId);
-                       System.out.println("Updated " + columnName + " to " + value);
-                   }
-               }
+               String columnName = columns.getString("COLUMN_NAME");
+               ResultSet oldValueRS = stmt.executeQuery("SELECT " + columnName + " FROM Users WHERE UserId = " + userId);
+               if (oldValueRS.next()) oldValue = oldValueRS.getString(columnName);
+               stmt.executeUpdate("UPDATE Users SET " + columnName + " = '" + value + "' WHERE UserId = " + userId);
+               System.out.println("Updated " + columnName + " from " + oldValue + " to " + value);
+               return true;
            }
            else {
                System.out.println("User not found in the database.");
+               return false;
            }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Error updating entry: " + e.getMessage());
+
         }
+        return false;
 
     }
 
