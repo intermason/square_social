@@ -2,8 +2,10 @@ package org.square;
 import java.io.IOException;
 import java.sql.*;
 import java.util.Map;
+import com.mysql.jdbc.Driver;
 
 public class Server {
+    String dbName;
     String url;
     String username;
     String password;
@@ -29,7 +31,7 @@ public class Server {
             System.out.println("Error reading and grabbing environment variables. Are they set properly?");
         }
         try {
-            String dbName = "";
+            dbName = "";
             assert url != null;
             dbConn = DriverManager.getConnection(url, username, password);
             PreparedStatement introStmt = dbConn.prepareStatement("SELECT DATABASE();");
@@ -73,6 +75,32 @@ public class Server {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void updateEntry(int userId, String column, String value) {
+        PreparedStatement stmt = null;
+        try {
+           stmt = dbConn.prepareStatement("SELECT * FROM Users WHERE UserId = " + userId);
+           ResultSet result = stmt.executeQuery();
+           if (result.next()) {
+               System.out.println("User found!");
+               DatabaseMetaData metaData = dbConn.getMetaData();
+               ResultSet columns = metaData.getColumns(dbName, null, "Users", null);
+               while (columns.next()) {
+                   String columnName = columns.getString("COLUMN_NAME");
+                   if (columnName.equals(column)) {
+                       stmt.executeUpdate("UPDATE Users SET " + columnName + " = '" + value + "' WHERE UserId = " + userId);
+                       System.out.println("Updated " + columnName + " to " + value);
+                   }
+               }
+           }
+           else {
+               System.out.println("User not found in the database.");
+           }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 
