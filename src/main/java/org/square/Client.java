@@ -1,72 +1,101 @@
 package org.square;
 
-import java.sql.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Scanner;
 
-public class Client {
+public class Client implements Runnable{
 
-    //Connection variable
-    private static Connection con;
+    Socket socket;
+    Scanner scanner;
+    PrintWriter writeToServer;
+    BufferedReader readFromServer;
 
-    public Client()
-    {
-        String url = "jdbc:mysql://localhost:3306/sqre";
-        String user ="root";
-        String password ="123";
-    //try for client connection to the server
-    try
-    {
-        con = DriverManager.getConnection(url,user,password);
-        System.out.println("Connected to the database");
+
+    public Client() {
+        System.out.println("Client started, enter an IPv4 IP Address [default: localhost]");
+        scanner = new Scanner(System.in);
+        String ip = scanner.nextLine();
+        if (ip.isEmpty()) {
+            try {
+                socket = new Socket("localhost", 1234);
+                 writeToServer = new PrintWriter(socket.getOutputStream(), true);
+                 readFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            } catch (Exception e) {
+                System.out.println("Could not connect to server");
+            }
+        } else {
+            try {
+                socket = new Socket(ip, 1234);
+                writeToServer = new PrintWriter(socket.getOutputStream(), true);
+                readFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            } catch (UnknownHostException e) {
+                System.out.println("Could not connect to server, is the ip address correct?");
+            } catch (IOException e) {
+                System.out.println("Could not connect to server, IOException");
+            }
     }
-    // if connection failed, give out error
-    catch (SQLException e)
-    {
-        System.out.println("Connection Failed!" + e );
+
+
     }
-}
 
-    //get information of Clients from Server
-    public void getAllClients() {
-        // make a query and get results from query
-        try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM sqre.users");
 
-            //prints next client in the database
-            while (rs.next())
-            {
-                System.out.println(rs.getString(1));
+    @Override
+    public void run() {
+        while (true) {
+            System.out.println("1 - Create User\n2 - Read All Users\n3 - Read One User\n4 - Update User\n5 - Delete User\n6 - Exit");
+            int choice = Integer.parseInt(scanner.nextLine());
+            switch (choice) {
+                case 1 -> {
+                    System.out.println("Enter UserId, FirstName, LastName, Email, Age, DisplayName");
+                    System.out.println("Enter each field separated by a comma: ");
+                    String[] fields = scanner.nextLine().split(",");
+                    writeToServer.println("CREATE," + fields[0] + "," + fields[1] + "," + fields[2] + "," + fields[3] + "," + fields[4] + "," + fields[5]);
+                    readFromServer();
+                }
+                case 2 -> {
+                    System.out.println("Sending READALL request");
+                    writeToServer.println("READALL");
+                    readFromServer();
+                }
+                case 3 -> {
+                    System.out.println("Enter UserId");
+                    int userId = Integer.parseInt(scanner.nextLine());
+                    writeToServer.println("READ," + userId);
+                    readFromServer();
+                }
+                case 4 -> {
+                    System.out.println("Enter UserId, ColumnName, NewValue");
+                    int userId = Integer.parseInt(scanner.nextLine());
+                    String column = scanner.nextLine();
+                    String value = scanner.nextLine();
+                    writeToServer.println("UPDATE," + userId + "," + column + "," + value);
+                    readFromServer();
+                }
+                case 5 -> {
+                    System.out.println("Enter UserId");
+                    int userId = Integer.parseInt(scanner.nextLine());
+                    writeToServer.println("DELETE," + userId);
+                    readFromServer();
+                }
+                case 6 -> System.exit(0);
+                default -> System.out.println("Invalid choice");
             }
         }
-        // the query was failed
-        catch (SQLException e)
-        {
-            System.out.println("Query Failed!" + e.getMessage());
-        }
-
     }
-
-    // insert new user to the table method, **call in main to insert new client**
-    public void insertClient(String displayName ,String age ,String email,String firstName , String lastName)
-    {
-        String sql = "INSERT INTO users (firstName,LastName,email,Age,DisplayName) VALUES (?,?,?,?,?)";
-
-        //inserts new details for client for the server
-        try (PreparedStatement ps = con.prepareStatement(sql))
-        {
-        ps.setString(1,firstName);
-        ps.setString(2,lastName);
-        ps.setString(3,email);
-        ps.setString(4,age);
-        ps.setString(5,displayName);
-        }
-        //catch errors with query
-        catch (SQLException e)
-        {
-            System.out.println("Insert Failed!" + e.getMessage());
+    public void readFromServer() {
+        try {
+            String line;
+            while (!(line = readFromServer.readLine()).equals("END")) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading from server");
+            e.printStackTrace();
         }
     }
-
-
-
 }
