@@ -51,14 +51,12 @@ public class Client implements Runnable{
             int choice = Integer.parseInt(scanner.nextLine());
             switch (choice) {
                 case 1 -> {
-                    System.out.println("Enter UserId, FirstName, LastName, Email, Age, DisplayName");
-                    System.out.println("Enter each field separated by a comma: ");
+                    System.out.println("Enter [UserId, FirstName, LastName, Email, Age, DisplayName], separated by commas.");
                     String[] fields = scanner.nextLine().split(",");
                     writeToServer.println("CREATE," + fields[0] + "," + fields[1] + "," + fields[2] + "," + fields[3] + "," + fields[4] + "," + fields[5]);
                     readFromServer();
                 }
                 case 2 -> {
-                    System.out.println("Sending READALL request");
                     writeToServer.println("READALL");
                     readFromServer();
                 }
@@ -69,7 +67,7 @@ public class Client implements Runnable{
                     readFromServer();
                 }
                 case 4 -> {
-                    System.out.println("Enter UserId, ColumnName, NewValue");
+                    System.out.println("Enter [UserId, ColumnName, NewValue], separated by commas.");
                     String[] fields = scanner.nextLine().split(",");
                     writeToServer.println("UPDATE," + fields[0] + "," + fields[1] + "," + fields[2]);
                     readFromServer();
