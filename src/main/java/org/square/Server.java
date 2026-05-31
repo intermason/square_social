@@ -58,6 +58,11 @@ public class Server {
         }
     }
 
+    /**
+     * Checks if a user id is already used in the database.
+     * @param userId
+     * @return true if the user id is already used, false otherwise.
+     */
     public boolean isUserIdUsed(int userId) {
         PreparedStatement stmt = null;
         try {
@@ -70,6 +75,10 @@ public class Server {
         }
     }
 
+    /**
+     * Reads a single entry from the database.
+     * @param userId
+     */
     public void readOneEntry(int userId) {
         PreparedStatement stmt = null;
         try {
@@ -85,6 +94,12 @@ public class Server {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Reads a single entry from the database and sends result to the client output stream.
+     * @param userId
+     * @param clientOut
+     */
     public void readOneEntry(int userId, PrintWriter clientOut) {
         PreparedStatement stmt = null;
         try {
@@ -101,10 +116,15 @@ public class Server {
                 clientOut.println("END");
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Error reading entry: " + e.getMessage());
+            clientOut.println("Error reading entry: " + e.getMessage());
+            clientOut.println("END");
         }
     }
 
+    /**
+     * Reads all entries from the database.
+     */
     public void readAllData() {
         Statement selectAll = null;
         try {
@@ -118,6 +138,11 @@ public class Server {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Reads all entries from the database and sends result to the client output stream.
+     * @param clientOut
+     */
     public void readAllData(PrintWriter clientOut) {
         Statement selectAll = null;
         try {
@@ -131,10 +156,24 @@ public class Server {
             }
             clientOut.println("END");
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Error reading all data: " + e.getMessage());
+            clientOut.println("Error reading all data: " + e.getMessage());
+            clientOut.println("END");
         }
     }
 
+
+    // TODO: If a UserId is not specified, default to the first available id that is able to be used (so if up to 12 is used, use 13)
+
+    /**
+     * Creates a new user entry in the database.
+     * @param userId
+     * @param firstName
+     * @param lastName
+     * @param email
+     * @param age
+     * @param displayName
+     */
     public void createEntry(int userId, String firstName, String lastName, String email, int age, String displayName) {
         PreparedStatement stmt = null;
 
@@ -159,6 +198,17 @@ public class Server {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Creates a new user entry in the database and sends result to the client output stream.
+     * @param userId
+     * @param firstName
+     * @param lastName
+     * @param email
+     * @param age
+     * @param displayName
+     * @param clientOut
+     */
     public void createEntry(int userId, String firstName, String lastName, String email, int age, String displayName, PrintWriter clientOut) {
         PreparedStatement stmt = null;
 
@@ -185,10 +235,19 @@ public class Server {
 
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Error creating entry: " + e.getMessage());
+            clientOut.println("Error creating entry: " + e.getMessage());
+            clientOut.println("END");
         }
     }
 
+    /**
+     * Updates a specific column of a user entry in the database.
+     * @param userId
+     * @param column
+     * @param value
+     * @return
+     */
     public boolean updateEntry(int userId, String column, String value) {
         PreparedStatement stmt = null;
         boolean columnFound = false;
@@ -234,6 +293,15 @@ public class Server {
         return false;
 
     }
+
+    /**
+     * Updates a specific column of a user entry in the database and sends result to the client output stream.
+     * @param userId
+     * @param column
+     * @param value
+     * @param clientOut
+     * @return
+     */
     public boolean updateEntry(int userId, String column, String value, PrintWriter clientOut) {
         PreparedStatement stmt = null;
         boolean columnFound = false;
@@ -291,6 +359,10 @@ public class Server {
 
     }
 
+    /**
+     * Deletes a specific user entry from the database.
+     * @param userId
+     */
     public void deleteEntry(int userId) {
         PreparedStatement stmt = null;
         try {
@@ -302,6 +374,12 @@ public class Server {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Deletes a specific user entry from the database and sends result to the client output stream.
+     * @param userId
+     * @param clientOut
+     */
     public void deleteEntry(int userId, PrintWriter clientOut) {
         PreparedStatement stmt = null;
         try {
@@ -312,7 +390,9 @@ public class Server {
             clientOut.println("User deleted successfully");
             clientOut.println("END");
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Error deleting entry: " + e.getMessage());
+            clientOut.println("Error deleting entry: " + e.getMessage());
+            clientOut.println("END");
         }
     }
 
