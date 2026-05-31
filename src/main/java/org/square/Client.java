@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Client implements Runnable{
@@ -61,7 +63,7 @@ public class Client implements Runnable{
                 }
                 case 2 -> {
                     writeToServer.println("READALL");
-                    readFromServer();
+                    readTableFromServer();
                 }
                 case 3 -> {
                     System.out.println("Enter UserId");
@@ -96,6 +98,53 @@ public class Client implements Runnable{
             System.in.read();
         } catch (IOException e) {
             System.out.println("Error reading from server");
+            e.printStackTrace();
+        }
+    }
+
+    public void readTableFromServer() {
+        List<String[]> rows = new ArrayList<>();
+        String[] headers = {"UserId", "FirstName", "LastName", "Email", "Age", "DisplayName"};
+        int[] widths = new int[6];
+
+        for (int i = 0; i < headers.length; i++) {
+            widths[i] = headers[i].length();
+        }
+        try {
+            String line;
+            while (!(line = readFromServer.readLine()).equals("END")) {
+                rows.add(line.split(","));
+            }
+            for (String[] row : rows) {
+                for (int i = 0; i < row.length; i++) {
+                    widths[i] = Math.max(widths[i], row[i].length());
+                }
+            }
+
+            StringBuilder border = new StringBuilder();
+            for (int width : widths) {
+                border.append("+");
+                border.append("-".repeat(width + 2));
+            }
+            border.append("+");
+            System.out.println(border);
+            StringBuilder headerRow = new StringBuilder("|");
+            for (int i = 0; i < headers.length; i++) {
+                headerRow.append(String.format(" %-" + widths[i] + "s |", headers[i]));
+            }
+            System.out.println(headerRow);
+            System.out.println(border);
+
+            for (String[] row : rows) {
+                StringBuilder rowBuilder = new StringBuilder("|");
+                for (int i = 0; i < row.length; i++) {
+                    rowBuilder.append(String.format(" %-" + widths[i] + "s |", row[i]));
+                }
+                System.out.println(rowBuilder);
+            }
+            System.out.println(border);
+        } catch (IOException e) {
+            System.out.println("Error reading table from server");
             e.printStackTrace();
         }
     }
