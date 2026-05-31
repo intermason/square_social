@@ -98,7 +98,7 @@ public class Server {
     /**
      * Reads a single entry from the database and sends result to the client output stream.
      * @param userId
-     * @param clientOut
+     * @param clientOut client output stream
      */
     public void readOneEntry(int userId, PrintWriter clientOut) {
         PreparedStatement stmt = null;
@@ -141,7 +141,7 @@ public class Server {
 
     /**
      * Reads all entries from the database and sends result to the client output stream.
-     * @param clientOut
+     * @param clientOut client output stream
      */
     public void readAllData(PrintWriter clientOut) {
         Statement selectAll = null;
@@ -207,7 +207,7 @@ public class Server {
      * @param email
      * @param age
      * @param displayName
-     * @param clientOut
+     * @param clientOut client output stream
      */
     public void createEntry(int userId, String firstName, String lastName, String email, int age, String displayName, PrintWriter clientOut) {
         PreparedStatement stmt = null;
@@ -246,7 +246,7 @@ public class Server {
      * @param userId
      * @param column
      * @param value
-     * @return
+     * @return true if the update was successful, false otherwise.
      */
     public boolean updateEntry(int userId, String column, String value) {
         PreparedStatement stmt = null;
@@ -299,8 +299,8 @@ public class Server {
      * @param userId
      * @param column
      * @param value
-     * @param clientOut
-     * @return
+     * @param clientOut client output stream
+     * @return true if the update was successful, false otherwise.
      */
     public boolean updateEntry(int userId, String column, String value, PrintWriter clientOut) {
         PreparedStatement stmt = null;
@@ -378,7 +378,7 @@ public class Server {
     /**
      * Deletes a specific user entry from the database and sends result to the client output stream.
      * @param userId
-     * @param clientOut
+     * @param clientOut client output stream
      */
     public void deleteEntry(int userId, PrintWriter clientOut) {
         PreparedStatement stmt = null;
