@@ -108,7 +108,7 @@ public class Server {
             if (rs.next()) {
                 System.out.println("User found, displaying data");
                 System.out.println("UserId: " + rs.getInt("UserId") + ", FirstName: " + rs.getString("FirstName") + " LastName: " + rs.getString("LastName") + ", Email: " + rs.getString("Email") + ", Age: " + rs.getInt("Age") + ", DisplayName: " + rs.getString("DisplayName"));
-                clientOut.println("UserId: " + rs.getInt("UserId") + ", FirstName: " + rs.getString("FirstName") + " LastName: " + rs.getString("LastName") + ", Email: " + rs.getString("Email") + ", Age: " + rs.getInt("Age") + ", DisplayName: " + rs.getString("DisplayName"));
+                clientOut.println(rs.getInt("UserId") + "," + rs.getString("FirstName") + "," + rs.getString("LastName") + "," + rs.getString("Email") + "," + rs.getInt("Age") + "," + rs.getString("DisplayName"));
                 clientOut.println("END");
             } else {
                 System.out.println("User not found in the database.");
