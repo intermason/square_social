@@ -53,6 +53,9 @@ public class Client implements Runnable{
                 case 1 -> {
                     System.out.println("Enter [UserId, FirstName, LastName, Email, Age, DisplayName], separated by commas.");
                     String[] fields = scanner.nextLine().split(",");
+                    if (fields[0].isEmpty()) {
+                        fields[0] = "0";
+                    }
                     writeToServer.println("CREATE," + fields[0] + "," + fields[1] + "," + fields[2] + "," + fields[3] + "," + fields[4] + "," + fields[5]);
                     readFromServer();
                 }

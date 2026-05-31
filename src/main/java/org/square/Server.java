@@ -211,6 +211,22 @@ public class Server {
      */
     public void createEntry(int userId, String firstName, String lastName, String email, int age, String displayName, PrintWriter clientOut) {
         PreparedStatement stmt = null;
+        if (isUserIdUsed(userId) || userId == 0) {
+            System.out.println("User id is already used or empty, finding first available id");
+            clientOut.println("User id is already used or empty, finding first available id");
+            int buffer = 1;
+            while (true) {
+                if (!isUserIdUsed(buffer)) {
+                    userId = buffer;
+                    System.out.println("User id is now " + userId);
+                    clientOut.println("User id is now " + userId);
+                    break;
+                }
+                else {
+                    buffer++;
+                }
+            }
+        }
 
         try {
             stmt = dbConn.prepareStatement("INSERT INTO Users VALUE (?, ?, ?, ?, ?, ?);");
