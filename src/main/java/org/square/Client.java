@@ -91,6 +91,8 @@ public class Client implements Runnable{
             while (!(line = readFromServer.readLine()).equals("END")) {
                 System.out.println(line);
             }
+            System.out.println("\nPress enter to continue");
+            System.in.read();
         } catch (IOException e) {
             System.out.println("Error reading from server");
             e.printStackTrace();
