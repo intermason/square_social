@@ -13,12 +13,14 @@ public class EnvParser {
 
     }
     public Map<String, String> getEnvVars() throws IOException {
-        Path envPath = Paths.get(".env");
+        Path envPath = Paths.get(".env").toAbsolutePath();
+        System.out.println(envPath);
         Map<String, String> envVars = Files.readAllLines(envPath)
                 .stream()
                 .map(line -> line.split("="))
                 .collect(Collectors.toMap(arr -> arr[0], arr -> arr[1]));
 
+        System.out.println(envVars);
         return envVars;
     }
 }

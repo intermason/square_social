@@ -4,7 +4,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.sql.*;
 import java.util.Map;
-import com.mysql.jdbc.Driver;
 import java.net.ServerSocket;
 
 public class Server {
@@ -30,6 +29,7 @@ public class Server {
             }
         } catch (IOException e) {
             System.out.println("Error reading and grabbing environment variables. Are they set properly?");
+            e.printStackTrace();
         }
         try {
             dbName = "";
@@ -47,6 +47,8 @@ public class Server {
             serverSocket = new ServerSocket(1234);
             while (true) {
                 Socket client = serverSocket.accept();
+                Thread clientHandler = new Thread(new ClientHandler(client, this));
+                clientHandler.start();
             }
 
         } catch (SQLException e) {

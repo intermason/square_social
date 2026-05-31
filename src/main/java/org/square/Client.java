@@ -70,10 +70,8 @@ public class Client implements Runnable{
                 }
                 case 4 -> {
                     System.out.println("Enter UserId, ColumnName, NewValue");
-                    int userId = Integer.parseInt(scanner.nextLine());
-                    String column = scanner.nextLine();
-                    String value = scanner.nextLine();
-                    writeToServer.println("UPDATE," + userId + "," + column + "," + value);
+                    String[] fields = scanner.nextLine().split(",");
+                    writeToServer.println("UPDATE," + fields[0] + "," + fields[1] + "," + fields[2]);
                     readFromServer();
                 }
                 case 5 -> {
