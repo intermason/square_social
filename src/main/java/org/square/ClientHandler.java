@@ -3,6 +3,10 @@ package org.square;
 import java.io.*;
 import java.net.Socket;
 
+/**
+ * Handles the client's connection and commands. This handler will allow parallel connections in the Server class.
+ * @see Server
+ */
 public class ClientHandler implements Runnable {
     Server server;
     Socket socket;
