@@ -14,6 +14,10 @@ public class Server {
     Connection dbConn;
     ResultSet columns;
     ServerSocket serverSocket;
+
+    /*
+    The following variables are only used for the ANSI color codes.
+     */
     public static final String RESET = "\u001B[0m";
 
     public static final String RED = "\u001B[31m";
