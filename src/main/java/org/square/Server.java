@@ -97,7 +97,7 @@ public class Server {
      * @return true if the user id is already used, false otherwise.
      */
     public boolean isUserIdUsed(int userId) {
-        PreparedStatement stmt = null;
+        PreparedStatement stmt;
         try {
             stmt = dbConn.prepareStatement("SELECT * FROM Users WHERE UserId = ?");
             stmt.setInt(1, userId);
@@ -114,7 +114,7 @@ public class Server {
      * @param userId User id of the user.
      */
     public void readOneEntry(int userId) {
-        PreparedStatement stmt = null;
+        PreparedStatement stmt;
         try {
             stmt = dbConn.prepareStatement("SELECT * FROM Users WHERE UserId = " + userId);
             ResultSet rs = stmt.executeQuery();
@@ -135,7 +135,7 @@ public class Server {
      * @param clientOut client output stream
      */
     public void readOneEntry(int userId, PrintWriter clientOut) {
-        PreparedStatement stmt = null;
+        PreparedStatement stmt;
         try {
             stmt = dbConn.prepareStatement("SELECT * FROM Users WHERE UserId = " + userId);
             ResultSet rs = stmt.executeQuery();
@@ -160,7 +160,7 @@ public class Server {
      * Reads all entries from the database.
      */
     public void readAllData() {
-        Statement selectAll = null;
+        Statement selectAll;
         try {
             selectAll = dbConn.createStatement();
             ResultSet rs = selectAll.executeQuery("SELECT * FROM Users");
@@ -178,7 +178,7 @@ public class Server {
      * @param clientOut client output stream
      */
     public void readAllData(PrintWriter clientOut) {
-        Statement selectAll = null;
+        Statement selectAll;
         try {
             selectAll = dbConn.createStatement();
             ResultSet rs = selectAll.executeQuery("SELECT * FROM Users");
@@ -208,7 +208,7 @@ public class Server {
      * @param displayName Display name of the user.
      */
     public void createEntry(int userId, String firstName, String lastName, String email, int age, String displayName) {
-        PreparedStatement stmt = null;
+        PreparedStatement stmt;
         if (isUserIdUsed(userId) || userId == 0) {
             System.out.println(warning("User id is already used or empty, finding first available id"));
             int buffer = 1;
@@ -257,7 +257,7 @@ public class Server {
      * @param clientOut client output stream
      */
     public void createEntry(int userId, String firstName, String lastName, String email, int age, String displayName, PrintWriter clientOut) {
-        PreparedStatement stmt = null;
+        PreparedStatement stmt;
         if (isUserIdUsed(userId) || userId == 0) {
             System.out.println(warning("User id is already used or empty, finding first available id"));
             clientOut.println(warning("User id is already used or empty, finding first available id"));
@@ -312,7 +312,7 @@ public class Server {
      * @return true if the update was successful, false otherwise.
      */
     public boolean updateEntry(int userId, String column, String value) {
-        PreparedStatement stmt = null;
+        PreparedStatement stmt;
         boolean columnFound = false;
         String oldValue = "";
         try {
@@ -375,7 +375,7 @@ public class Server {
      * @return true if the update was successful, false otherwise.
      */
     public boolean updateEntry(int userId, String column, String value, PrintWriter clientOut) {
-        PreparedStatement stmt = null;
+        PreparedStatement stmt;
         boolean columnFound = false;
         String oldValue = "";
         try {
@@ -443,7 +443,7 @@ public class Server {
      * @param userId User id of the user.
      */
     public void deleteEntry(int userId) {
-        PreparedStatement stmt = null;
+        PreparedStatement stmt;
         try {
             stmt = dbConn.prepareStatement("DELETE FROM Users WHERE UserId = ?");
             stmt.setInt(1, userId);
@@ -460,7 +460,7 @@ public class Server {
      * @param clientOut client output stream
      */
     public void deleteEntry(int userId, PrintWriter clientOut) {
-        PreparedStatement stmt = null;
+        PreparedStatement stmt;
         try {
             stmt = dbConn.prepareStatement("DELETE FROM Users WHERE UserId = ?");
             stmt.setInt(1, userId);
