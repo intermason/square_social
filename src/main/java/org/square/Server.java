@@ -86,9 +86,7 @@ public class Server {
                 clientHandler.start();
             }
 
-        } catch (SQLException e) {
-            System.out.println(error("Error creating Server class and connecting to database. ERROR: " + e.getMessage()));
-        } catch (IOException e) {
+        } catch (SQLException | IOException e) {
             System.out.println(error("Error creating Server class and connecting to database. ERROR: " + e.getMessage()));
         }
     }
