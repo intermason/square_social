@@ -60,7 +60,7 @@ public class Server {
 
     /**
      * Checks if a user id is already used in the database.
-     * @param userId
+     * @param userId User id of the user.
      * @return true if the user id is already used, false otherwise.
      */
     public boolean isUserIdUsed(int userId) {
@@ -77,7 +77,7 @@ public class Server {
 
     /**
      * Reads a single entry from the database.
-     * @param userId
+     * @param userId User id of the user.
      */
     public void readOneEntry(int userId) {
         PreparedStatement stmt = null;
@@ -97,7 +97,7 @@ public class Server {
 
     /**
      * Reads a single entry from the database and sends result to the client output stream.
-     * @param userId
+     * @param userId User id of the user.
      * @param clientOut client output stream
      */
     public void readOneEntry(int userId, PrintWriter clientOut) {
@@ -167,15 +167,29 @@ public class Server {
 
     /**
      * Creates a new user entry in the database.
-     * @param userId
-     * @param firstName
-     * @param lastName
-     * @param email
-     * @param age
-     * @param displayName
+     * @param userId UserId of the user.
+     * @param firstName First name of user.
+     * @param lastName Last name of user.
+     * @param email Email address of the user.
+     * @param age Integer age of the user.
+     * @param displayName Display name of the user.
      */
     public void createEntry(int userId, String firstName, String lastName, String email, int age, String displayName) {
         PreparedStatement stmt = null;
+        if (isUserIdUsed(userId) || userId == 0) {
+            System.out.println("User id is already used or empty, finding first available id");
+            int buffer = 1;
+            while (true) {
+                if (!isUserIdUsed(buffer)) {
+                    userId = buffer;
+                    System.out.println("User id is now " + userId);
+                    break;
+                }
+                else {
+                    buffer++;
+                }
+            }
+        }
 
         try {
             stmt = dbConn.prepareStatement("INSERT INTO Users VALUE (?, ?, ?, ?, ?, ?);");
@@ -201,12 +215,12 @@ public class Server {
 
     /**
      * Creates a new user entry in the database and sends result to the client output stream.
-     * @param userId
-     * @param firstName
-     * @param lastName
-     * @param email
-     * @param age
-     * @param displayName
+     * @param userId UserId of the user.
+     * @param firstName First name of user.
+     * @param lastName Last name of user.
+     * @param email Email address of the user.
+     * @param age Integer age of the user.
+     * @param displayName Display name of the user.
      * @param clientOut client output stream
      */
     public void createEntry(int userId, String firstName, String lastName, String email, int age, String displayName, PrintWriter clientOut) {
@@ -259,9 +273,9 @@ public class Server {
 
     /**
      * Updates a specific column of a user entry in the database.
-     * @param userId
-     * @param column
-     * @param value
+     * @param userId User id of the user.
+     * @param column Table column name to update.
+     * @param value Chosen value to update the column to.
      * @return true if the update was successful, false otherwise.
      */
     public boolean updateEntry(int userId, String column, String value) {
@@ -312,9 +326,9 @@ public class Server {
 
     /**
      * Updates a specific column of a user entry in the database and sends result to the client output stream.
-     * @param userId
-     * @param column
-     * @param value
+     * @param userId User id of the user.
+     * @param column Table column name to update.
+     * @param value Chosen value to update the column to.
      * @param clientOut client output stream
      * @return true if the update was successful, false otherwise.
      */
@@ -377,7 +391,7 @@ public class Server {
 
     /**
      * Deletes a specific user entry from the database.
-     * @param userId
+     * @param userId User id of the user.
      */
     public void deleteEntry(int userId) {
         PreparedStatement stmt = null;
@@ -393,7 +407,7 @@ public class Server {
 
     /**
      * Deletes a specific user entry from the database and sends result to the client output stream.
-     * @param userId
+     * @param userId User id of the user.
      * @param clientOut client output stream
      */
     public void deleteEntry(int userId, PrintWriter clientOut) {
