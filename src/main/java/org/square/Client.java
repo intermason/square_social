@@ -10,6 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Client class that handles the client's connection and commands to the Server. <br/>
+ * This class will only be used on the client side, so most of the methods just receive connections and make it easier for the tables to read. <br/>
+ * For the table formatting, see readTableFromServer().
+ * @see Server
+ * @see ClientHandler
+ * @author Mason Doti
+ * @author Ethan Dornian
+ */
 public class Client implements Runnable{
 
     Socket socket;

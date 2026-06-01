@@ -6,6 +6,15 @@ import java.sql.*;
 import java.util.Map;
 import java.net.ServerSocket;
 
+/**
+ * Handles the server-side database connections and interactions. <br/> This class won't start the database itself, so do not expect
+ * the database to be connected if you have not set up the MySQL database yourself. <br/>
+ *
+ * This class is not meant to be used by itself, the Client class should be used to interact with the Server class.
+ *
+ * @see Client
+ * @author Mason Doti
+ */
 public class Server {
     String dbName;
     String url;
