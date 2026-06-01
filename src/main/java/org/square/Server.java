@@ -14,6 +14,17 @@ public class Server {
     Connection dbConn;
     ResultSet columns;
     ServerSocket serverSocket;
+    public static final String RESET = "\u001B[0m";
+
+    public static final String RED = "\u001B[31m";
+    public static final String GREEN = "\u001B[32m";
+    public static final String YELLOW = "\u001B[33m";
+    public static final String BLUE = "\u001B[34m";
+
+    public static final String ERROR = RED + "ERROR" + RESET;
+    public static final String SUCCESS = GREEN + "SUCCESS" + RESET;
+    public static final String WARNING = YELLOW + "WARNING" + RESET;
+    public static final String INFO = BLUE + "INFO" + RESET;
 
     public Server() {
         Map<String, String> env;
