@@ -401,7 +401,10 @@ public class Server {
             if (result.next()) {
                 System.out.println(success("User found!"));
                 String columnName = columns.getString("COLUMN_NAME");
-                ResultSet oldValueRS = stmt.executeQuery("SELECT " + columnName + " FROM Users WHERE UserId = " + userId);
+                PreparedStatement oldValueStmt = dbConn.prepareStatement("SELECT ? FROM Users WHERE UserId = ?");
+                oldValueStmt.setString(1, columnName);
+                oldValueStmt.setInt(2, userId);
+                ResultSet oldValueRS = oldValueStmt.executeQuery();
                 if (oldValueRS.next()) oldValue = oldValueRS.getString(columnName);
                 if (column.equals("UserId")) {
                     if (isUserIdUsed(Integer.parseInt(value))) {
@@ -411,7 +414,11 @@ public class Server {
                         return false;
                     }
                 }
-                stmt.executeUpdate("UPDATE Users SET " + columnName + " = '" + value + "' WHERE UserId = " + userId);
+                PreparedStatement stmt2 = dbConn.prepareStatement("UPDATE Users SET ? = ? WHERE UserId = ?");
+                stmt2.setString(1, columnName);
+                stmt2.setString(2, value);
+                stmt2.setInt(3, userId);
+                stmt2.executeUpdate();
                 System.out.println(success("Updated " + columnName + " from " + oldValue + " to " + value));
                 clientOut.println(success("Updated" + columnName + " from " + oldValue + " to " + value));
                 clientOut.println("END");
