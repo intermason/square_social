@@ -34,6 +34,9 @@ public class Server {
         return BLUE + "INFO: " + RESET + message;
     }
 
+    /**
+     * Constructor for the Server class. This will setup the database connection and start listening for incoming connections.
+     */
     public Server() {
         Map<String, String> env;
         EnvParser envParser = new EnvParser();
