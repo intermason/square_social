@@ -319,12 +319,17 @@ public class Server {
                 System.out.println("Column not found in the database.");
                 return false;
             }
-           stmt = dbConn.prepareStatement("SELECT * FROM Users WHERE UserId = " + userId);
+           stmt = dbConn.prepareStatement("SELECT * FROM Users WHERE UserId = ?");
+           stmt.setInt(1, userId);
            ResultSet result = stmt.executeQuery();
            if (result.next()) {
                System.out.println("User found!");
                String columnName = columns.getString("COLUMN_NAME");
-               ResultSet oldValueRS = stmt.executeQuery("SELECT " + columnName + " FROM Users WHERE UserId = " + userId);
+               PreparedStatement stmt2 = dbConn.prepareStatement("SELECT ? FROM Users WHERE UserId = ?");
+               stmt2.setString(1, columnName);
+               stmt2.setInt(2, userId);
+
+               ResultSet oldValueRS = stmt2.executeQuery();
                if (oldValueRS.next()) oldValue = oldValueRS.getString(columnName);
                if (column.equals("UserId")) {
                    if (isUserIdUsed(Integer.parseInt(value))) {
@@ -332,7 +337,11 @@ public class Server {
                        return false;
                    }
                }
-               stmt.executeUpdate("UPDATE Users SET " + columnName + " = '" + value + "' WHERE UserId = " + userId);
+               PreparedStatement stmt3 = dbConn.prepareStatement("UPDATE Users SET ? = ? WHERE UserId = ?");
+               stmt3.setString(1, columnName);
+               stmt3.setString(2, value);
+               stmt3.setInt(3, userId);
+               stmt3.executeUpdate();
                System.out.println("Updated " + columnName + " from " + oldValue + " to " + value);
                return true;
            }
