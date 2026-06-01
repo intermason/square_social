@@ -21,11 +21,6 @@ public class Server {
     public static final String YELLOW = "\u001B[33m";
     public static final String BLUE = "\u001B[34m";
 
-    public static final String ERROR = RED + "ERROR" + RESET;
-    public static final String SUCCESS = GREEN + "SUCCESS" + RESET;
-    public static final String WARNING = YELLOW + "WARNING" + RESET;
-    public static final String INFO = BLUE + "INFO" + RESET;
-
     public static String error(String message) {
         return RED + "ERROR: " + RESET + message;
     }
