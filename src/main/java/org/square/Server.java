@@ -26,6 +26,19 @@ public class Server {
     public static final String WARNING = YELLOW + "WARNING" + RESET;
     public static final String INFO = BLUE + "INFO" + RESET;
 
+    public static String error(String message) {
+        return RED + "ERROR: " + RESET + message;
+    }
+    public static String success(String message) {
+        return GREEN + "SUCCESS: " + RESET + message;
+    }
+    public static String warning(String message) {
+        return YELLOW + "WARNING: " + RESET + message;
+    }
+    public static String info(String message) {
+        return BLUE + "INFO: " + RESET + message;
+    }
+
     public Server() {
         Map<String, String> env;
         EnvParser envParser = new EnvParser();
