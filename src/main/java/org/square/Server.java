@@ -187,7 +187,6 @@ public class Server {
     }
 
 
-    // TODO: If a UserId is not specified, default to the first available id that is able to be used (so if up to 12 is used, use 13)
 
     /**
      * Creates a new user entry in the database.
