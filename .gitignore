@@ -44,3 +44,4 @@ build/
 ### .env file should be ignored. ###
 .env
 /.env
+/.junie/
