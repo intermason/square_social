@@ -52,8 +52,7 @@ public class Server {
                 }
             }
         } catch (IOException e) {
-            System.out.println("Error reading and grabbing environment variables. Are they set properly?");
-            e.printStackTrace();
+            System.out.println(error("Error reading and grabbing environment variables. Are they set properly?"));
         }
         try {
             dbName = "";
@@ -66,9 +65,10 @@ public class Server {
             }
             DatabaseMetaData metaData = dbConn.getMetaData();
             columns = metaData.getColumns(dbName, null, "Users", null);
-            System.out.println("Database has connected. Database name: " + dbName);
+            System.out.println(success("Database has connected. Database name: " + dbName));
 
             serverSocket = new ServerSocket(1234);
+            System.out.println(info("Server is listening on port 1234"));
             while (true) {
                 Socket client = serverSocket.accept();
                 Thread clientHandler = new Thread(new ClientHandler(client, this));
@@ -76,9 +76,9 @@ public class Server {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(error("Error creating Server class and connecting to database. ERROR: " + e.getMessage()));
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(error("Error creating Server class and connecting to database. ERROR: " + e.getMessage()));
         }
     }
 
@@ -95,7 +95,8 @@ public class Server {
             ResultSet rs = stmt.executeQuery();
             return rs.next();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println(error("Error checking if user id is used: " + e.getMessage()));
+            return true;
         }
     }
 
@@ -109,13 +110,13 @@ public class Server {
             stmt = dbConn.prepareStatement("SELECT * FROM Users WHERE UserId = " + userId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                System.out.println("User found, displaying data");
+                System.out.println(success("User found, displaying data"));
                 System.out.println("UserId: " + rs.getInt("UserId") + ", FirstName: " + rs.getString("FirstName") + " LastName: " + rs.getString("LastName") + ", Email: " + rs.getString("Email") + ", Age: " + rs.getInt("Age") + ", DisplayName: " + rs.getString("DisplayName"));
             } else {
-                System.out.println("User not found in the database.");
+                System.out.println(error("User not found in the database."));
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println(error("Error reading entry: " + e.getMessage()));
         }
     }
 
@@ -130,18 +131,18 @@ public class Server {
             stmt = dbConn.prepareStatement("SELECT * FROM Users WHERE UserId = " + userId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                System.out.println("User found, displaying data");
+                System.out.println(success("User found, displaying data"));
                 System.out.println("UserId: " + rs.getInt("UserId") + ", FirstName: " + rs.getString("FirstName") + " LastName: " + rs.getString("LastName") + ", Email: " + rs.getString("Email") + ", Age: " + rs.getInt("Age") + ", DisplayName: " + rs.getString("DisplayName"));
                 clientOut.println(rs.getInt("UserId") + "," + rs.getString("FirstName") + "," + rs.getString("LastName") + "," + rs.getString("Email") + "," + rs.getInt("Age") + "," + rs.getString("DisplayName"));
                 clientOut.println("END");
             } else {
-                System.out.println("User not found in the database.");
-                clientOut.println("User not found in the database.");
+                System.out.println(error("User not found in the database."));
+                clientOut.println(error("User not found in the database."));
                 clientOut.println("END");
             }
         } catch (SQLException e) {
-            System.out.println("Error reading entry: " + e.getMessage());
-            clientOut.println("Error reading entry: " + e.getMessage());
+            System.out.println(error("Error reading entry: " + e.getMessage()));
+            clientOut.println(error("Error reading entry: " + e.getMessage()));
             clientOut.println("END");
         }
     }
@@ -159,7 +160,7 @@ public class Server {
                 System.out.println("UserId: " + rs.getInt("UserId") + ", FirstName: " + rs.getString("FirstName") + " LastName: " + rs.getString("LastName") + ", Email: " + rs.getString("Email") + ", Age: " + rs.getInt("Age") + ", DisplayName: " + rs.getString("DisplayName"));
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println(error("Error reading all data: " + e.getMessage()));
         }
     }
 
@@ -180,8 +181,8 @@ public class Server {
             }
             clientOut.println("END");
         } catch (SQLException e) {
-            System.out.println("Error reading all data: " + e.getMessage());
-            clientOut.println("Error reading all data: " + e.getMessage());
+            System.out.println(error("Error reading all data: " + e.getMessage()));
+            clientOut.println(error("Error reading all data: " + e.getMessage()));
             clientOut.println("END");
         }
     }
@@ -200,12 +201,12 @@ public class Server {
     public void createEntry(int userId, String firstName, String lastName, String email, int age, String displayName) {
         PreparedStatement stmt = null;
         if (isUserIdUsed(userId) || userId == 0) {
-            System.out.println("User id is already used or empty, finding first available id");
+            System.out.println(warning("User id is already used or empty, finding first available id"));
             int buffer = 1;
             while (true) {
                 if (!isUserIdUsed(buffer)) {
                     userId = buffer;
-                    System.out.println("User id is now " + userId);
+                    System.out.println(info("User id is now " + userId));
                     break;
                 }
                 else {
@@ -224,15 +225,15 @@ public class Server {
             stmt.setString(6, displayName);
             if (!isUserIdUsed(userId)) {
                 stmt.executeUpdate();
-                System.out.println("User created successfully");
+                System.out.println(success("User created successfully"));
             }
             else {
-                System.out.println("User id is already used.");
+                System.out.println(error("User id is already used."));
             }
 
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println(error("Error creating entry: " + e.getMessage()));
         }
     }
 
@@ -249,14 +250,14 @@ public class Server {
     public void createEntry(int userId, String firstName, String lastName, String email, int age, String displayName, PrintWriter clientOut) {
         PreparedStatement stmt = null;
         if (isUserIdUsed(userId) || userId == 0) {
-            System.out.println("User id is already used or empty, finding first available id");
-            clientOut.println("User id is already used or empty, finding first available id");
+            System.out.println(warning("User id is already used or empty, finding first available id"));
+            clientOut.println(warning("User id is already used or empty, finding first available id"));
             int buffer = 1;
             while (true) {
                 if (!isUserIdUsed(buffer)) {
                     userId = buffer;
-                    System.out.println("User id is now " + userId);
-                    clientOut.println("User id is now " + userId);
+                    System.out.println(info("User id is now " + userId));
+                    clientOut.println(info("User id is now " + userId));
                     break;
                 }
                 else {
@@ -275,21 +276,21 @@ public class Server {
             stmt.setString(6, displayName);
             if (!isUserIdUsed(userId)) {
                 stmt.executeUpdate();
-                System.out.println("User created successfully");
-                clientOut.println("User created successfully");
+                System.out.println(success("User created successfully"));
+                clientOut.println(success("User created successfully"));
                 clientOut.println("END");
             }
             else {
-                System.out.println("User id is already used.");
-                clientOut.println("User id is already used.");
+                System.out.println(error("User id is already used."));
+                clientOut.println(error("User id is already used."));
                 clientOut.println("END");
 
             }
 
 
         } catch (SQLException e) {
-            System.out.println("Error creating entry: " + e.getMessage());
-            clientOut.println("Error creating entry: " + e.getMessage());
+            System.out.println(error("Error creating entry: " + e.getMessage()));
+            clientOut.println(error("Error creating entry: " + e.getMessage()));
             clientOut.println("END");
         }
     }
@@ -309,20 +310,20 @@ public class Server {
             while (columns.next()) {
                 String columnName = columns.getString("COLUMN_NAME");
                 if (columnName.equals(column)) {
-                    System.out.println("Column found: " + columnName);
+                    System.out.println(info("Column found: " + columnName));
                     columnFound = true;
                     break;
                 }
             }
             if (!columnFound) {
-                System.out.println("Column not found in the database.");
+                System.out.println(error("Column not found in the database."));
                 return false;
             }
            stmt = dbConn.prepareStatement("SELECT * FROM Users WHERE UserId = ?");
            stmt.setInt(1, userId);
            ResultSet result = stmt.executeQuery();
            if (result.next()) {
-               System.out.println("User found!");
+               System.out.println(success("User found!"));
                String columnName = columns.getString("COLUMN_NAME");
                PreparedStatement stmt2 = dbConn.prepareStatement("SELECT ? FROM Users WHERE UserId = ?");
                stmt2.setString(1, columnName);
@@ -332,7 +333,7 @@ public class Server {
                if (oldValueRS.next()) oldValue = oldValueRS.getString(columnName);
                if (column.equals("UserId")) {
                    if (isUserIdUsed(Integer.parseInt(value))) {
-                       System.out.println("User id is already used.");
+                       System.out.println(error("User id is already used."));
                        return false;
                    }
                }
@@ -341,15 +342,15 @@ public class Server {
                stmt3.setString(2, value);
                stmt3.setInt(3, userId);
                stmt3.executeUpdate();
-               System.out.println("Updated " + columnName + " from " + oldValue + " to " + value);
+               System.out.println(success("Updated " + columnName + " from " + oldValue + " to " + value));
                return true;
            }
            else {
-               System.out.println("User not found in the database.");
+               System.out.println(error("User not found in the database."));
                return false;
            }
         } catch (SQLException e) {
-            System.out.println("Error updating entry: " + e.getMessage());
+            System.out.println(error("Error updating entry: " + e.getMessage()));
 
         }
         return false;
@@ -372,48 +373,48 @@ public class Server {
             while (columns.next()) {
                 String columnName = columns.getString("COLUMN_NAME");
                 if (columnName.equals(column)) {
-                    System.out.println("Column found: " + columnName);
-                    clientOut.println("Column found: " + columnName);
+                    System.out.println(info("Column found: " + columnName));
+                    clientOut.println(info("Column found: " + columnName));
                     columnFound = true;
                     break;
                 }
             }
             if (!columnFound) {
-                System.out.println("Column not found in the database.");
-                clientOut.println("Column not found in the database.");
+                System.out.println(error("Column not found in the database."));
+                clientOut.println(error("Column not found in the database."));
                 clientOut.println("END");
                 return false;
             }
             stmt = dbConn.prepareStatement("SELECT * FROM Users WHERE UserId = " + userId);
             ResultSet result = stmt.executeQuery();
             if (result.next()) {
-                System.out.println("User found!");
+                System.out.println(success("User found!"));
                 String columnName = columns.getString("COLUMN_NAME");
                 ResultSet oldValueRS = stmt.executeQuery("SELECT " + columnName + " FROM Users WHERE UserId = " + userId);
                 if (oldValueRS.next()) oldValue = oldValueRS.getString(columnName);
                 if (column.equals("UserId")) {
                     if (isUserIdUsed(Integer.parseInt(value))) {
-                        System.out.println("User id is already used.");
-                        clientOut.println("User id is already used.");
+                        System.out.println(error("User id is already used."));
+                        clientOut.println(error("User id is already used."));
                         clientOut.println("END");
                         return false;
                     }
                 }
                 stmt.executeUpdate("UPDATE Users SET " + columnName + " = '" + value + "' WHERE UserId = " + userId);
-                System.out.println("Updated " + columnName + " from " + oldValue + " to " + value);
-                clientOut.println("Updated" + columnName + " from " + oldValue + " to " + value);
+                System.out.println(success("Updated " + columnName + " from " + oldValue + " to " + value));
+                clientOut.println(success("Updated" + columnName + " from " + oldValue + " to " + value));
                 clientOut.println("END");
                 return true;
             }
             else {
-                System.out.println("User not found in the database.");
-                clientOut.println("User not found in the database.");
+                System.out.println(error("User not found in the database."));
+                clientOut.println(error("User not found in the database."));
                 clientOut.println("END");
                 return false;
             }
         } catch (SQLException e) {
-            System.out.println("Error updating entry: " + e.getMessage());
-            clientOut.println("Error updating entry: " + e.getMessage());
+            System.out.println(error("Error updating entry: " + e.getMessage()));
+            clientOut.println(error("Error updating entry: " + e.getMessage()));
             clientOut.println("END");
 
         }
@@ -431,9 +432,9 @@ public class Server {
             stmt = dbConn.prepareStatement("DELETE FROM Users WHERE UserId = ?");
             stmt.setInt(1, userId);
             stmt.executeUpdate();
-            System.out.println("User deleted successfully");
+            System.out.println(success("User deleted successfully"));
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println(error("Error deleting entry: " + e.getMessage()));
         }
     }
 
@@ -448,12 +449,12 @@ public class Server {
             stmt = dbConn.prepareStatement("DELETE FROM Users WHERE UserId = ?");
             stmt.setInt(1, userId);
             stmt.executeUpdate();
-            System.out.println("User deleted successfully");
-            clientOut.println("User deleted successfully");
+            System.out.println(success("User deleted successfully"));
+            clientOut.println(success("User deleted successfully"));
             clientOut.println("END");
         } catch (SQLException e) {
-            System.out.println("Error deleting entry: " + e.getMessage());
-            clientOut.println("Error deleting entry: " + e.getMessage());
+            System.out.println(error("Error deleting entry: " + e.getMessage()));
+            clientOut.println(error("Error deleting entry: " + e.getMessage()));
             clientOut.println("END");
         }
     }
