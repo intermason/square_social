@@ -69,7 +69,7 @@ public class Client implements Runnable{
                     System.out.println("Enter UserId");
                     int userId = Integer.parseInt(scanner.nextLine());
                     writeToServer.println("READ," + userId);
-                    readFromServer();
+                    readTableFromServer();
                 }
                 case 4 -> {
                     System.out.println("Enter [UserId, ColumnName, NewValue], separated by commas.");
