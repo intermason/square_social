@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 /**
  * EnvParser reads the .env file and returns a map of environment variables in the form of a key-value pair.
  * The class itself won't do it much, but it will be useful for other classes to use.
- * @see .env
  * @author Mason Doti
  */
 public class EnvParser {
