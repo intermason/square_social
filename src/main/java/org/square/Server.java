@@ -474,6 +474,29 @@ public class Server {
             clientOut.println("END");
         }
     }
+    public void filterEntries(String column, String value, PrintWriter clientOut) {
+        PreparedStatement stmt;
+        try {
+            stmt = dbConn.prepareStatement("SELECT * FROM Users WHERE " + column + " LIKE ?");
+            stmt.setString(1, value);
+            ResultSet rs = stmt.executeQuery();
+            boolean found = false;
+            while (rs.next()) {
+                found = true;
+                System.out.println("UserId: " + rs.getInt("UserId") + ", FirstName: " + rs.getString("FirstName") + " LastName: " + rs.getString("LastName") + ", Email: " + rs.getString("Email") + ", Age: " + rs.getInt("Age") + ", DisplayName: " + rs.getString("DisplayName"));
+                clientOut.println(rs.getInt("UserId") + "," + rs.getString("FirstName") + "," + rs.getString("LastName") + "," + rs.getString("Email") + "," + rs.getInt("Age") + "," + rs.getString("DisplayName"));
+            }
+            if (!found) {
+                System.out.println(error("No users found matching the filter."));
+                clientOut.println(error("No users found matching the filter."));
+            }
+            clientOut.println("END");
+        } catch (SQLException e) {
+            System.out.println(error("Error filtering entries: " + e.getMessage()));
+            clientOut.println(error("Error filtering entries: " + e.getMessage()));
+            clientOut.println("END");
+        }
+    }
 
 
 

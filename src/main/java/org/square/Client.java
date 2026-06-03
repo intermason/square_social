@@ -92,7 +92,17 @@ public class Client implements Runnable{
                     writeToServer.println("DELETE," + userId);
                     readFromServer();
                 }
-                case 6 -> System.exit(0);
+                case 6 -> {
+                    System.out.println("Enter [ColumnName, Value]");
+                    String[] fields = scanner.nextLine().split(",");
+                    if (fields.length < 2) {
+                        System.out.println("Please enter both a column name and a value.");
+                        break;
+                    }
+                    writeToServer.println("FILTER," + fields[0] + "," + fields[1]);
+                    readTableFromServer();
+                }
+                case 7 -> System.exit(0);
                 default -> System.out.println("Invalid choice");
             }
         }

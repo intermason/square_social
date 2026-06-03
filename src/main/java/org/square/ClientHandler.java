@@ -38,6 +38,7 @@ public class ClientHandler implements Runnable {
                     case "READALL" -> server.readAllData(writer);
                     case "UPDATE" -> server.updateEntry(Integer.parseInt(commandArgs[1]), commandArgs[2], commandArgs[3], writer);
                     case "DELETE" -> server.deleteEntry(Integer.parseInt(commandArgs[1]), writer);
+                    case "FILTER" -> server.filterEntries(commandArgs[1], commandArgs[2], writer);
                     default -> System.out.println("Invalid command");
                 }
             }
