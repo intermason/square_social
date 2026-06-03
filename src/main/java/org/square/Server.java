@@ -346,7 +346,7 @@ public class Server {
                        return false;
                    }
                }
-               PreparedStatement stmt3 = dbConn.prepareStatement("UPDATE Users SET ? = ? WHERE UserId = ?");
+               PreparedStatement stmt3 = dbConn.prepareStatement("UPDATE Users SET " + column + " = ? WHERE UserId = ?");
                stmt3.setString(1, columnName);
                stmt3.setString(2, value);
                stmt3.setInt(3, userId);
@@ -412,13 +412,12 @@ public class Server {
                         return false;
                     }
                 }
-                PreparedStatement stmt2 = dbConn.prepareStatement("UPDATE Users SET ? = ? WHERE UserId = ?");
-                stmt2.setString(1, columnName);
-                stmt2.setString(2, value);
-                stmt2.setInt(3, userId);
+                PreparedStatement stmt2 = dbConn.prepareStatement("UPDATE Users SET " + column + " = ? WHERE UserId = ?");
+                stmt2.setString(1, value);
+                stmt2.setInt(2, userId);
                 stmt2.executeUpdate();
                 System.out.println(success("Updated " + columnName + " from " + oldValue + " to " + value));
-                clientOut.println(success("Updated" + columnName + " from " + oldValue + " to " + value));
+                clientOut.println(success("Updated " + columnName + " from " + oldValue + " to " + value));
                 clientOut.println("END");
                 return true;
             }
