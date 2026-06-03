@@ -65,8 +65,9 @@ DB_PASSWORD=your_password
 The easiest way is to run `Main.java` directly from your IDE (IntelliJ is already configured). Alternatively, compile and run from the terminal:
 
 ```bash
+export JAVA_HOME=/usr/lib/jvm/java-26-openjdk  # — this is for linux/unix based operating systems, if you're on Windows, then it's different.
 mvn compile
-java -cp target/classes org.square.Main
+java -cp "target/classes:/home/<user>/.m2/repository/com/mysql/mysql-connector-j/9.5.0/mysql-connector-j-9.5.0.jar" org.square.Main
 ```
 
 When prompted, enter `S` to start the server or `C` to connect as a client.
@@ -80,18 +81,8 @@ When prompted, enter `S` to start the server or `C` to connect as a client.
 | 3      | Read one user                         | `UserId`                                           |
 | 4      | Update a user field                   | `UserId, ColumnName, NewValue`                     |
 | 5      | Delete a user                         | `UserId`                                           |
-| 6      | Exit                                  | —                                                  |
-
-## Project Structure
-
-```
-src/main/java/org/square/
-├── Main.java           # Entry point — prompts Server or Client mode
-├── Server.java         # TCP server + database operations
-├── ClientHandler.java  # Per-client thread, parses commands and delegates to Server
-├── Client.java         # Interactive client menu + formatted table output
-└── EnvParser.java      # Reads .env file into a key-value map
-```
+| 6      | Filter users by column                | `ColumnName, Value` (supports `%` wildcards, e.g. `FirstName, %john%`) |
+| 7      | Exit                                  | —                                                  |
 
 ## Authors
 
