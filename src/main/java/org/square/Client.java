@@ -58,14 +58,31 @@ public class Client implements Runnable{
     @Override
     public void run() {
         while (true) {
-            System.out.println("1 - Create User\n2 - Read All Users\n3 - Read One User\n4 - Update User\n5 - Delete User\n6 - Exit");
-            int choice = Integer.parseInt(scanner.nextLine());
+            System.out.println("1 - Create User\n2 - Read All Users\n3 - Read One User\n4 - Update User\n5 - Delete User\n6 - Filter Users \n7 - Exit");
+            int choice;
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid choice, please enter a number.");
+                continue;
+            }
             switch (choice) {
                 case 1 -> {
                     System.out.println("Enter [UserId, FirstName, LastName, Email, Age, DisplayName], separated by commas.");
                     String[] fields = scanner.nextLine().split(",");
+                    if (fields.length < 6) {
+                        System.out.println("Not enough fields entered. Please enter all 6 values.");
+                        break;
+                    }
                     if (fields[0].isEmpty()) {
                         fields[0] = "0";
+                    }
+                    try {
+                        Integer.parseInt(fields[0]);
+                        Integer.parseInt(fields[4]);
+                    } catch (NumberFormatException e) {
+                        System.out.println("UserId and Age must be numbers.");
+                        break;
                     }
                     writeToServer.println("CREATE," + fields[0] + "," + fields[1] + "," + fields[2] + "," + fields[3] + "," + fields[4] + "," + fields[5]);
                     readFromServer();
@@ -76,19 +93,41 @@ public class Client implements Runnable{
                 }
                 case 3 -> {
                     System.out.println("Enter UserId");
-                    int userId = Integer.parseInt(scanner.nextLine());
+                    int userId;
+                    try {
+                        userId = Integer.parseInt(scanner.nextLine());
+                    } catch (NumberFormatException e) {
+                        System.out.println("UserId must be a number.");
+                        break;
+                    }
                     writeToServer.println("READ," + userId);
                     readTableFromServer();
                 }
                 case 4 -> {
                     System.out.println("Enter [UserId, ColumnName, NewValue], separated by commas.");
                     String[] fields = scanner.nextLine().split(",");
+                    if (fields.length < 3) {
+                        System.out.println("Not enough fields entered. Please enter UserId, ColumnName, and NewValue.");
+                        break;
+                    }
+                    try {
+                        Integer.parseInt(fields[0]);
+                    } catch (NumberFormatException e) {
+                        System.out.println("UserId must be a number.");
+                        break;
+                    }
                     writeToServer.println("UPDATE," + fields[0] + "," + fields[1] + "," + fields[2]);
                     readFromServer();
                 }
                 case 5 -> {
                     System.out.println("Enter UserId");
-                    int userId = Integer.parseInt(scanner.nextLine());
+                    int userId;
+                    try {
+                        userId = Integer.parseInt(scanner.nextLine());
+                    } catch (NumberFormatException e) {
+                        System.out.println("UserId must be a number.");
+                        break;
+                    }
                     writeToServer.println("DELETE," + userId);
                     readFromServer();
                 }
@@ -132,6 +171,10 @@ public class Client implements Runnable{
         try {
             String line;
             while (!(line = readFromServer.readLine()).equals("END")) {
+                if (line.contains("ERROR:") || line.contains("WARNING:")) {
+                    System.out.println(line);
+                    continue;
+                }
                 rows.add(line.split(","));
             }
             for (String[] row : rows) {
